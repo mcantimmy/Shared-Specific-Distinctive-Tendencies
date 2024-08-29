@@ -1,2 +1,2 @@
 # Shared Specific Distinctive Tendencies
- Authorship Attribution
+ Authorship Attribution + Authorship Verification
