@@ -59,7 +59,7 @@ class ContrastiveAuthorshipModel(nn.Module):
         self.projection = nn.Sequential(
             nn.Linear(self.roberta.config.hidden_size, 256),
             nn.ReLU(),
-            nn.Linear(256, 128)
+            nn.Linear(256, 256)
         )
         self.dropout = nn.Dropout(0.1)
 
@@ -229,7 +229,7 @@ def main():
 
     # Parameters
     batch_size = 32
-    seq_length = 128  # Max sequence length
+    seq_length = 256  # Max sequence length
     
     tokenizer = RobertaTokenizer.from_pretrained('roberta-base')
     dataset = RedditAuthorshipDataset(texts, authors, tokenizer)
