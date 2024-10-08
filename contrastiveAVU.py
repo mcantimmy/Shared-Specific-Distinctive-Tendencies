@@ -53,22 +53,40 @@ class RedditAuthorshipDataset(Dataset):
         }
 
 class ContrastiveAuthorshipModel(nn.Module):
-    def __init__(self, pretrained_model_name='roberta-base'):
+    def __init__(self, pretrained_model_name='roberta-base', freeze_base=False):
         super().__init__()
         self.roberta = RobertaModel.from_pretrained(pretrained_model_name)
+        
+        if freeze_base:
+            for param in self.roberta.parameters():
+                param.requires_grad = False
+        
         self.projection = nn.Sequential(
-            nn.Linear(self.roberta.config.hidden_size, 256),
+            nn.Linear(self.roberta.config.hidden_size, 512),
+            nn.LayerNorm(512),
             nn.ReLU(),
-            nn.Linear(256, 256)
+            nn.Dropout(0.2),
+            nn.Linear(512, 256),
+            nn.LayerNorm(256),
+            nn.ReLU(),
+            nn.Dropout(0.2),
+            nn.Linear(256, 128)
         )
-        self.dropout = nn.Dropout(0.1)
+        
+    def mean_pooling(self, model_output, attention_mask):
+        token_embeddings = model_output.last_hidden_state
+        input_mask_expanded = attention_mask.unsqueeze(-1).expand(token_embeddings.size()).float()
+        return torch.sum(token_embeddings * input_mask_expanded, 1) / torch.clamp(input_mask_expanded.sum(1), min=1e-9)
 
     def forward(self, input_ids1, attention_mask1, input_ids2, attention_mask2):
         output1 = self.roberta(input_ids1, attention_mask=attention_mask1)
         output2 = self.roberta(input_ids2, attention_mask=attention_mask2)
         
-        embedding1 = self.projection(self.dropout(output1.last_hidden_state[:, 0, :]))
-        embedding2 = self.projection(self.dropout(output2.last_hidden_state[:, 0, :]))
+        pooled_output1 = self.mean_pooling(output1, attention_mask1)
+        pooled_output2 = self.mean_pooling(output2, attention_mask2)
+        
+        embedding1 = self.projection(pooled_output1)
+        embedding2 = self.projection(pooled_output2)
         
         return embedding1, embedding2
 
@@ -234,7 +252,7 @@ def main():
     tokenizer = RobertaTokenizer.from_pretrained('roberta-base')
     dataset = RedditAuthorshipDataset(texts, authors, tokenizer)
 
-    model = ContrastiveAuthorshipModel().to(device)
+    model = ContrastiveAuthorshipModel(freeze_base=False).to(device)
     #model.load_state_dict(torch.load('best_authorship_model.pth'))
 
     # Estimate memory usage
