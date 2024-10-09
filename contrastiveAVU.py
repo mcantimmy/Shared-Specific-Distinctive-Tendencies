@@ -225,7 +225,7 @@ def estimate_memory_usage(model, batch_size, seq_length, dtype=torch.float32):
     embedding_memory = batch_size * 2 * seq_length * model.roberta.config.hidden_size * dtype.itemsize
 
     # Estimate memory for attention masks
-    attention_mask_memory = batch_size * 2 * seq_length * torch.bool().itemsize
+    attention_mask_memory = batch_size * 2 * seq_length * torch.bool.itemsize
 
     # Total estimated memory
     total_memory = (model_params_memory + activations_memory + gradients_memory + 
