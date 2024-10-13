@@ -198,8 +198,9 @@ def predict_authorship(model, tokenizer, text1, text2, device, threshold=0.5):
     with torch.no_grad():
         embedding1, embedding2 = model(input_ids1, attention_mask1, input_ids2, attention_mask2)
         similarity = nn.functional.cosine_similarity(embedding1, embedding2).item()
+        centered_similarity = 0.5 * (similarity + 1)
     
-    same_author = similarity > threshold
+    same_author = centered_similarity > threshold
     return same_author, similarity
 
 def get_memory_usage():
