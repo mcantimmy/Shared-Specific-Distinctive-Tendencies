@@ -1,7 +1,7 @@
 import torch
 import torch.nn as nn
 import torch.optim as optim
-from transformers import RobertaTokenizer, RobertaModel, AutoTokenizer, AutoModel
+from transformers import AutoTokenizer, AutoModel
 from torch.utils.data import Dataset, DataLoader
 from datasets import load_dataset
 from sklearn.model_selection import KFold
