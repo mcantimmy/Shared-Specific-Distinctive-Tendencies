@@ -303,6 +303,7 @@ def main():
 
     model = ContrastiveAuthorshipModel(freeze_base=False).to(device)
 
+    # Calculate expected resources
     estimated_memory = estimate_memory_usage(model, batch_size, seq_length)
     print(f"Estimated memory usage per batch: {estimated_memory:.2f} MB")
 
