@@ -288,7 +288,9 @@ def estimate_memory_usage(model, batch_size, seq_length, dtype=torch.float32):
     return total_memory / (1024 * 1024)
 
 def main():
-    data = load_dataset("reddit", split="train[:10000]", trust_remote_code=True)
+    dataset_size = 10000
+    train_size = "train[:"+str(dataset_size)+"]"
+    data = load_dataset("reddit", split=train_size, trust_remote_code=True)
     texts = data['content']
     authors = data['author']
 
