@@ -205,7 +205,7 @@ def predict_authorship(model, tokenizer, text1, text2, device, threshold=0.5):
 
 def get_memory_usage():
     process = psutil.Process(os.getpid())
-    return process.memory_info().rss / (1024 * 1024)  # in MB
+    return process.memory_info().rss / (1024 * 1024) # in MB
 
 def estimate_memory_usage(model, batch_size, seq_length, dtype=torch.float32):
     def numel(model):
@@ -220,7 +220,7 @@ def estimate_memory_usage(model, batch_size, seq_length, dtype=torch.float32):
     gradients_memory = model_params_memory
     
     # Optimizer memory (assuming Adam)
-    optimizer_memory = model_params_memory * 2  # Adam keeps two additional values per parameter
+    optimizer_memory = model_params_memory * 2.1  # Adam keeps two additional values per parameter
 
     # Estimate memory for embeddings
     embedding_memory = batch_size * 2 * seq_length * model.roberta.config.hidden_size * dtype.itemsize
